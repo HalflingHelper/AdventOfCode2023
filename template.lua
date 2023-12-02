@@ -1,3 +1,5 @@
+require 'util'
+
 DAY = _
 
 local filename = string.format("inputs/input_%d.txt", DAY)
