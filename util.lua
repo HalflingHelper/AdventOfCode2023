@@ -4,3 +4,8 @@ function split(string, char, init)
     init = init and init or 1
     return string:gmatch(("[^%s]+"):format(char), init)
 end
+
+function chars(string, init)
+    init = init and init or 1
+    return string:gmatch(".", init)
+end
