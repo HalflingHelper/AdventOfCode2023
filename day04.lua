@@ -2,7 +2,7 @@ require 'util'
 
 DAY = 4
 
-local filename = string.format("inputs/input_%d.txt", DAY)
+local filename = string.format("inputs/input_%02d.txt", DAY)
 
 local f = assert(io.open(filename, "r"))
 
