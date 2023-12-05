@@ -5,7 +5,7 @@ local filename = string.format("inputs/input_%02d.txt", DAY)
 local f = assert(io.open(filename, "r"))
 
 -- Function definitions here
-function subNums(t)
+local function subNums(t)
     local nums = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" }
 
     local newStr = ""
