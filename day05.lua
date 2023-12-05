@@ -12,29 +12,6 @@ local data = {}  -- All the maps
 local map = {}   -- Current map or whatever
 
 -- It's recursive now
-local function getDestination(seed_num, data, start)
-    if start == nil then start = 1 end
-
-    local m = data[start]
-    if m == nil then
-        return seed_num
-    end
-
-    local found = nil
-    for _, v in ipairs(m) do
-        local source = v[1]
-        local dest = v[2]
-
-        if seed_num >= source[1] and seed_num <= source[2] then
-            found = dest[1] + seed_num - source[1]
-        end
-    end
-
-    if not found then found = seed_num end
-
-    return getDestination(found, data, start + 1)
-end
-
 local function getMinDestination(seed_start, seed_end, data, start)
     if start == nil then start = 2 end -- Because my data is shitty!
 
@@ -54,18 +31,19 @@ local function getMinDestination(seed_start, seed_end, data, start)
 
             new_start = new_start - source[1] + dest[1]
             new_end = dest[2] - (source[2] - new_end)
-
+            
             found[#found + 1] = getMinDestination(new_start, new_end, data, start + 1)
         end
     end
 
-    if #found == 0 then found = { seed_start } end
-
+    if #found == 0 then found = { getMinDestination(seed_start, seed_end, data, start+1) } end
+    
     local min = math.huge
 
     for _, v in ipairs(found) do
         min = math.min(min, v)
     end
+
     return min
 end
 
@@ -82,9 +60,7 @@ for line in f:lines() do
             seeds[#seeds + 1] = tonumber(s)
         end
     else
-        local source_start
-        local dest_start
-        local size
+        local source_start, dest_start, size
         local i = 1
         for s in split(line, " ") do
             if i == 1 then
@@ -106,25 +82,19 @@ for line in f:lines() do
     end
 end
 
-data[#data + 1] = map
+data[#data + 1] = map -- ADd the last line
 
 -- Do everything else here
 local part1 = math.huge
 local part2 = math.huge
 
-for i, v in ipairs(seeds) do
-    local r = getDestination(v, data)
-    part1 = math.min(part1, r)
-end
-
 for i = 1, #seeds, 2 do
     local s = seeds[i]
     local l = seeds[i + 1]
 
-    local r = getMinDestination(s, s + l - 1, data)
-    part2 = math.min(part2, r)
+    part1 = math.min(part1, getMinDestination(s, s, data), getMinDestination(l, l, data))
+    part2 = math.min(part2, getMinDestination(s, s + l - 1, data))
 end
-
 
 print("Part 1:", part1)
 print("Part 2:", part2)
