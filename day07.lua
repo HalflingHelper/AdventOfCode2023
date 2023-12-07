@@ -76,8 +76,8 @@ local function typeWithJokers(hand)
     local best = 1
 
     for _, f in ipairs(jokerMap) do
-        if string.find(hand, f) ~= nil then
-            local h = string.gsub(hand, 'J', f)
+        if hand:find(f) ~= nil then
+            local h = hand:gsub('J', f)
             best = math.max(best, type(h))
         end
     end
