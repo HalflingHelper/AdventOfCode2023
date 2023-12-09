@@ -19,15 +19,9 @@ for line in f:lines() do
 end
 -- Do everything else here
 local part1 = 0
-local part2 = 0
+local part2 = 1
 
-local curs = {}
-for k, _ in pairs(data) do
-    if k:sub(3, 3) == "A" then
-        curs[#curs + 1] = k --cur
-    end
-end
-
+-- For Part 1
 local found = false
 local cur = "AAA"
 while not found do
@@ -42,13 +36,16 @@ while not found do
     end
 end
 
-
--- For part2
--- For all of the nodes, see where they end up after a full cycle of the directions, marking the steps
---  at which there is a node ending in Z
+-- For Part 2
+local curs = {}
+for k, _ in pairs(data) do
+    if k:sub(3, 3) == "A" then
+        curs[#curs + 1] = k
+    end
+end
 local curtimes = {}
 
-for i, k in ipairs(curs) do
+for _, k in ipairs(curs) do
     found = false
     local cur = k
     local steps = 0
@@ -63,14 +60,11 @@ for i, k in ipairs(curs) do
         end
     end
     curtimes[#curtimes + 1] = steps
-
 end
 
-part2 = 1
-for i, v in ipairs(curtimes) do
+for _, v in ipairs(curtimes) do
     part2 = lcm(part2, v)
 end
-
 
 print("Part 1:", part1)
 print("Part 2:", part2)
