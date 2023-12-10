@@ -10,34 +10,21 @@ local f = assert(io.open(filename, "r"))
 local data = {}
 local visited = {}
 
--- Gross
 local function getAdj(row, col, data)
     local pipe = data[row][col]
 
     local res = {}
-    if pipe == "|" then
-        if row > 1 then res[#res + 1] = { row - 1, col } end
-        if row < #data then res[#res + 1] = { row + 1, col } end
-    elseif pipe == "-" then
-        if col > 1 then res[#res + 1] = { row, col - 1 } end
-        if col < #data[row] then res[#res + 1] = { row, col + 1 } end
-    elseif pipe == "F" then
-        if row < #data then res[#res + 1] = { row + 1, col } end
-        if col < #data[row] then res[#res + 1] = { row, col + 1 } end
-    elseif pipe == "J" then
-        if row > 1 then res[#res + 1] = { row - 1, col } end
-        if col > 1 then res[#res + 1] = { row, col - 1 } end
-    elseif pipe == "7" then
-        if row < #data then res[#res + 1] = { row + 1, col } end
-        if col > 1 then res[#res + 1] = { row, col - 1 } end
-    elseif pipe == "L" then
-        if row > 1 then res[#res + 1] = { row - 1, col } end
-        if col < #data[row] then res[#res + 1] = { row, col + 1 } end
-    elseif pipe == "S" then
-        if row > 1 then res[#res + 1] = { row - 1, col } end
-        if row < #data then res[#res + 1] = { row + 1, col } end
-        if col > 1 then res[#res + 1] = { row, col - 1 } end
-        if col < #data[row] then res[#res + 1] = { row, col + 1 } end
+    if row > 1 and ("|JLS"):match(pipe) then
+        res[#res + 1] = { row - 1, col }
+    end
+    if row < #data and ("|7FS"):match(pipe) then
+        res[#res + 1] = { row + 1, col }
+    end
+    if col > 1 and ("-7JS"):match(pipe) then
+        res[#res + 1] = { row, col - 1 }
+    end
+    if col < #data[row] and ("-FLS"):match(pipe) then
+        res[#res + 1] = { row, col + 1 }
     end
 
     return res
@@ -55,7 +42,7 @@ local function canVisit(orgRow, orgCol, destRow, destCol, data)
     return false
 end
 
-local function hash(row, col) return tostring(row) .. " " ..tostring(col) end
+local function hash(row, col) return tostring(row) .. " " .. tostring(col) end
 
 local startRow, startCol
 
@@ -65,22 +52,23 @@ for line in f:lines() do
     local visitRow = {}
     for c in chars(line) do
         row[#row + 1] = c
-        visitRow[#visitRow+1] = false
+        visitRow[#visitRow + 1] = false
         if c == "S" then
             startRow = #data + 1
             startCol = #row
         end
     end
     data[#data + 1] = row
-    visited[#visited+1] = visitRow
+    visited[#visited + 1] = visitRow
 end
 
 -- Do everything else here
 local part1 = 0
 local part2 = 0
 
+-- Part 1: bfs to find the loop
 local loopSize = 1
-visited[startRow][startCol] = "|" 
+visited[startRow][startCol] = "|"
 -- Cheating by hardcoding value of S, I know there is a way to do this correctly once we get the loop, but I am too lazy
 local Q = { { startRow, startCol } }
 
@@ -94,23 +82,22 @@ while #Q ~= 0 do
         if not visited[nRow][nCol] and canVisit(c[1], c[2], nRow, nCol, data) then
             loopSize = loopSize + 1
             visited[nRow][nCol] = data[nRow][nCol]
-            table.insert(Q, {nRow, nCol})
+            table.insert(Q, { nRow, nCol })
         end
     end
 end
 
-local inLoop = false
-local sub = nil
 
 for _, row in ipairs(visited) do
-    inLoop = false
-    sub = nil
+    local inLoop = false
+    local sub = nil
     for _, loop in ipairs(row) do
         if loop then
-            if loop == "|" then inLoop = not inLoop 
+            if loop == "|" then
+                inLoop = not inLoop
             elseif loop ~= "-" then
-                if sub == nil then 
-                    sub = loop 
+                if sub == nil then
+                    sub = loop
                 elseif sub == "F" then
                     if loop == "J" then inLoop = not inLoop end
                     sub = nil
@@ -120,7 +107,7 @@ for _, row in ipairs(visited) do
                 end
             end
         else
-            if inLoop == true then
+            if inLoop then
                 part2 = part2 + 1
             end
         end
