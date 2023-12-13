@@ -37,6 +37,9 @@ function sum(tbl, start)
     return s
 end
 
+-- Table stuff
+
+-- Returns a table that is the contents of t repeated r times
 function table_rep(tbl, r)
     local res = {}
     for i, v in ipairs(tbl) do
@@ -44,5 +47,21 @@ function table_rep(tbl, r)
             res[i + j * #tbl] = v
         end
     end
+    return res
+end
+
+-- Returns a table whos rows are the columns of tbl
+function get_columns(tbl)
+    local res = {}
+
+    for i, row in ipairs(tbl) do
+        local j = 1
+        for c in chars(row) do
+            if not res[j] then res[j] = "" end
+            res[j] = res[j]..c
+            j = j + 1
+        end
+    end
+
     return res
 end
