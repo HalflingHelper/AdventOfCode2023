@@ -37,6 +37,11 @@ function sum(tbl, start)
     return s
 end
 
+-- Returns the sum of a .. b
+function arithSum(a, b)
+    return math.floor((a + b) / 2 * (b - a + 1))
+end
+
 -- Table stuff
 
 -- Returns a table that is the contents of t repeated r times
