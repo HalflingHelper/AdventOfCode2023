@@ -6,5 +6,5 @@ My goal is to use this year as an opportunity to become more familiar with parts
 My favorite problems this year: \
     5\. [If You Give A Seed A Fertilizer](https://adventofcode.com/2023/day/5) \
     6. [Wait For It](https://adventofcode.com/2023/day/6) \
-    8. [Camel Cards](https://adventofcode.com/2023/day/8) \
+    7. [Camel Cards](https://adventofcode.com/2023/day/7) \
     9. [Mirage Maintenance](https://adventofcode.com/2023/day/9)
