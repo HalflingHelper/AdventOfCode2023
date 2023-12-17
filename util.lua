@@ -22,7 +22,7 @@ function gcd(a, b)
 end
 
 function lcm(a, b)
-    return a * (b/gcd(a, b))
+    return a * (b / gcd(a, b))
 end
 
 function sign(n)
@@ -48,7 +48,7 @@ end
 function table_rep(tbl, r)
     local res = {}
     for i, v in ipairs(tbl) do
-        for j = 0, r-1 do
+        for j = 0, r - 1 do
             res[i + j * #tbl] = v
         end
     end
@@ -63,10 +63,79 @@ function get_columns(tbl)
         local j = 1
         for c in chars(row) do
             if not res[j] then res[j] = "" end
-            res[j] = res[j]..c
+            res[j] = res[j] .. c
             j = j + 1
         end
     end
 
     return res
+end
+
+-- Stuff for a min heap
+local function hLeft(n)
+    return 2 * n
+end
+
+local function hRight(n)
+    return 2 * n + 1
+end
+
+local function hParent(n)
+    return math.floor(n / 2)
+end
+
+-- Swaps the elements of the table at indices a and b
+local function swap(arr, a, b)
+    local temp = arr[a]
+    arr[a] = arr[b]
+    arr[b] = temp
+end
+
+-- Moves the element at position i into the correct position
+local function heapify(heap, i)
+    local cLeft = heap[hLeft(i)]
+    local cRight = heap[hRight(i)]
+
+    if cLeft == nil and cRight == nil then
+        return -- No kids
+    elseif cRight == nil then
+        if cLeft < heap[i] then
+            swap(heap, i, hLeft(i))
+            heapify(heap, hLeft(i))
+        end
+    elseif cLeft == nil then
+        if cRight < heap[i] then
+            swap(heap, i, hRight(i))
+            heapify(heap, hRight(i))
+        end
+    else
+        if cLeft < heap[i] or cRight < heap[i] then
+
+        if cLeft < cRight then
+            swap(heap, i, hLeft(i))
+            heapify(heap, hLeft(i))
+        else
+            swap(heap, i, hRight(i))
+            heapify(heap, hRight(i))
+        end
+    end
+    end
+end
+
+
+function insertHeap(heap, val)
+    local i = #heap + 1
+    heap[i] = val
+
+    while heap[hParent(i)] do
+        heapify(heap, hParent(i))
+        i = hParent(i)
+    end
+end
+
+function removeHeap(heap)
+    swap(heap, 1, #heap)
+    local r=table.remove(heap, #heap)
+    heapify(heap, 1)
+    return r
 end
