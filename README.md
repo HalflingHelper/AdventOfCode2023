@@ -9,4 +9,4 @@ My favorite problems this year: \
     7. [Camel Cards](https://adventofcode.com/2023/day/7) - Lots of fun logic. \
     9. [Mirage Maintenance](https://adventofcode.com/2023/day/9) - Cool concept with a fun recursive solution.\
     17. [Clumsy Crucible](https://adventofcode.com/2023/day/17) - Honestly quite painful, but finding and optimizing a solution felt really good. Implementing a heap was fun too. \
-    19. [Aplenty](https://adventofcode.com/2023/day/19) - Parts one and two were both fun in different ways. Utilizing pattern matching to parse expressions, using anonymous functions, and getting to write recursive code. \
+    19. [Aplenty](https://adventofcode.com/2023/day/19) - Parts one and two were both fun in different ways. Utilizing pattern matching to parse expressions, using anonymous functions, and getting to write recursive code. 
