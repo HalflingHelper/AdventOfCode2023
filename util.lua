@@ -71,6 +71,32 @@ function get_columns(tbl)
     return res
 end
 
+function table_contains(table, val)
+    for i, v in pairs(table) do
+        if v == val then return true end
+    end
+    return false
+end
+
+-- Returns a copy of the array with duplicate entries removed
+function table_remove_dupes(tbl)
+    if #tbl == 0 then return tbl end
+
+    local tmp = {}
+
+    local i = 1
+    while i <= #tbl do
+        local v = tbl[i]
+        if tmp[v] then
+            table.remove(tbl, i)
+            i = i -1
+        end
+        tmp[v] = true 
+
+        i = i + 1 
+    end
+end
+
 -- Stuff for a min heap
 local function hLeft(n)
     return 2 * n
