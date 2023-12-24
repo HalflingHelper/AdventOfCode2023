@@ -78,6 +78,14 @@ function table_contains(table, val)
     return false
 end
 
+function dict_copy(d)
+    local r = {}
+    for k, v in pairs(d) do
+        r[k] = v
+    end
+    return r
+end
+
 -- Returns a copy of the array with duplicate entries removed
 function table_remove_dupes(tbl)
     if #tbl == 0 then return tbl end
