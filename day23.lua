@@ -109,6 +109,34 @@ local function bg(data, start, stop)
     return g
 end
 
+local function lp(graph, start, stop, visited)
+    if start == stop then return 0 end
+
+    visited[start] = true
+
+    local res = 0
+
+    for i, opt in ipairs(graph[start]) do
+        if not visited[opt[1]] then
+            local r = lp(graph, opt[1], stop, visited)
+            -- if r == 0 then print(start, opt[2], "A") end
+            if r ~= -1 then -- No dead end
+                r = r + opt[2]
+
+                if r > res then
+                    res = r
+                end
+            end
+        end
+    end
+
+    visited[start] = false
+
+    if res == 0 then return -1 end
+
+    return res
+end
+
 -- Do everything else here
 local g = bg(d, start)
 local part1 = lp(g, hash(start), hash(stop), {})
