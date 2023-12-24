@@ -48,55 +48,47 @@ local function getAdj(data, start, visited)
     return adj
 end
 
--- Just see how many open slots there are
-local function adj2(data, pos)
+local function findI(data, pos, v)
+    local dist = 1
+    local adj = getAdj(data, pos, v)
+    local cur = pos
 
-    local adj = {}
-    for _, v in pairs(slopes) do
-        local c = { start[1] + v[1], start[2] + v[2] }
-        if data[c[1]] and data[c[1]][c[2]] and data[c[1]][c[2]] ~= "#" then
-            adj[#adj + 1] = c
-        end
+    while #adj == 1 do
+        dist = dist + 1
+        v[hash(cur)] = true
+        cur = adj[1]
+        adj = getAdj(data, cur, v)
     end
-    return adj
+
+    return { cur, dist, pos }
 end
 
-local function getNeighbors(data, n)
-    local v = {}           -- visited
-    local q = { { n, 0 } } -- queue with node and its distance from n
+local function gn(data, pos)
+    local a = getAdj(data, pos, {})
 
-    local ns = {}          -- the thing that we want to return
+    local r = {}
 
-    while #q ~= 0 do
-        local cur = table.remove(q, 1)                  -- Pop an element from the queue
-
-        local adj = adj2(data, cur[1])                  -- Find the squares next to our element
-
-        if #adj ~= 2 and (hash(cur[1]) ~= hash(n)) then -- If there is not one neighbor, it is a terminal cell (So long as it is not where we started)
-            local neigh = { table.unpack(cur) }
-            neigh[3] = n                                -- We set up a table to add that includes the source node
-            ns[#ns + 1] = neigh                         -- We add it to the result
-        else                                            -- If there is only one of these, then we want to keep moving out, so we add it to the queue
-            for i, o in ipairs(adj) do
-                print(table.concat(o, ","))
-                q[#q + 1] = { o, cur[2] + 1 } -- Increase the distance and add it back to the queue
-            end
-        end
+    for _, adj in ipairs(a) do
+        r[#r + 1] = findI(data, adj, { [hash(pos)] = true })
+        r[#r][3] = pos
     end
-
-    return ns -- Return all of the neighbors, distances, and where they came from
+    return r
 end
 
 local function bg(data, start, stop)
     -- bfs out from the start
     -- when we hit a node that has multiple choices we add it as a vertex
-    local g = {}                         -- The graph (adjacency list)
-    local v = {}                         -- The visited edges
+    local g = {}                      -- The graph (adjacency list)
+    local v = {}                      -- The visited edges
 
-    local ns = getNeighbors(data, start) -- Get the neighbors of the start
+    -- TODO: This will break if there are multiple paths between two nodes
+    -- because you're not guaranteed to build the longest one first.
+    -- This wasn't in the input so I'm fine, but this should be a heap to make sure
+    -- you add the longest edges first to the graph
+    local ns = gn(data, start)        -- Get the neighbors of the start
 
-    while #ns ~= 0 do                    -- While there are still nodes to visit
-        local n = table.remove(ns, 1)    -- Get an edge
+    while #ns ~= 0 do                 -- While there are still nodes to visit
+        local n = table.remove(ns, 1) -- Get an edge
         local h = hash(n[1]) .. "|" .. hash(n[3])
 
         if not v[h] then                                      -- If we haven't marked this edge
@@ -106,7 +98,7 @@ local function bg(data, start, stop)
 
             table.insert(g[hash(n[3])], { hash(n[1]), n[2] }) -- Add the edge to the graph for that neighbor
 
-            local nss = getNeighbors(data, n[1])              -- Get all the neighbors for the node we just added
+            local nss = gn(data, n[1])                        -- Get all the neighbors for the node we just added
 
             for i, e in ipairs(nss) do
                 ns[#ns + 1] = e -- Add each of those to our queue of edges to add to the graph
@@ -117,96 +109,12 @@ local function bg(data, start, stop)
     return g
 end
 
-local function bfs(data, start, stop)
-    local v = {}
-    local q = {{start, 0}}
-
-    while #q ~= 0 do
-        local cur = table.remove(q, 1)
-        v[hash(cur[1])] = true
-        if hash(cur[1]) == hash(stop) then
-            return cur[2]
-        end
-
-        -- If it's interesting and not the goal, then we return -1
-        if #adj2(data, cur[1]) ~= 2 and cur[1] ~= start then
-        else
-
-        for i, a in ipairs(getAdj(data, cur[1], v)) do
-            table.insert(q, {a, cur[2] + 1})
-        end
-    end
-    end
-
-    return -1
-end
-
-local function bg2(data)
-    local graph = {}
-
-    local interesting = {}
-    for i, row in ipairs(data) do
-        for j, col in ipairs(row) do
-            if col ~= "#" then
-            local a = adj2(data, { i, j })
-            if #a ~= 2 then
-                interesting[#interesting + 1] = { i, j }
-            end
-        end end
-    end
-
-    for i, v in ipairs(interesting) do
-        graph[hash(v)] = {}
-        for j = i + 1, #interesting do
-            local b = bfs(data, v, interesting[j])
-            if b ~= -1 then
-            table.insert(graph[hash(v)], { hash(interesting[j]), b })
-            end
-        end
-    end
-    print(graph[hash(start)])
-
-    return graph
-end
-
-local function lp(graph, start, stop, visited)
-    if start == stop then return 0 end
-
-    visited[start] = true
-
-    local res = 0
-
-    print(start)
-    for i, opt in ipairs(graph[start]) do
-        if not visited[opt[1]] then
-            local r = lp(graph, opt[1], stop, visited)
-            -- if r == 0 then print(start, opt[2], "A") end
-            r = r + opt[2]
-
-            if r > res then
-                res = r
-            end
-        end
-    end
-
-    visited[start] = false
-
-    return res
-end
-
 -- Do everything else here
-local g = bg2(d)
+local g = bg(d, start)
 local part1 = lp(g, hash(start), hash(stop), {})
 
-
-
-
--- local g2 = bg(d2, start, stop)
--- local part2 = lp(g2, hash(start), hash(stop), {[hash(start)] = true})
-
-
+local g2 = bg(d2, start, stop)
+local part2 = lp(g2, hash(start), hash(stop), { [hash(start)] = true })
 
 print("Part 1:", part1)
 print("Part 2:", part2)
-
--- High - 6681
